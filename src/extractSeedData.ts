@@ -2,11 +2,19 @@
  * 渡されたTBL定義書のシートデータからシードデータを抽出し、配列として返却
  * @returns
  */
-export const extractSeedData = (
-  sheetData: any,
-  seedDataStartIndex: any,
-  seedDataColumns: any
-) => {
+export const extractSeedData = (sheetData: any) => {
+  // シードデータの開始行を探す
+  const seedDataStartIndex = sheetData.findIndex((row: any) =>
+    row.some((cell: any) => cell === "シードデータ")
+  );
+
+  // カラム定義とシードデータのヘッダー行を取得
+  let seedDataColumns: string[] = [];
+  if (seedDataStartIndex !== -1 && sheetData[seedDataStartIndex + 1]) {
+    seedDataColumns = sheetData[seedDataStartIndex + 1].filter(Boolean);
+  }
+
+  // シードデータをRecordの配列として取得
   const seedData: Record<string, any>[] = [];
   if (seedDataStartIndex !== -1) {
     for (let i = seedDataStartIndex + 2; i < sheetData.length; i++) {

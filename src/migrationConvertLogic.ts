@@ -41,23 +41,8 @@ export const generateMigration = (sheetData: string[][]) => {
     : null;
   const columns: ColumnDefinition[] = [];
 
-  // シードデータの開始行を探す
-  const seedDataStartIndex = sheetData.findIndex((row) =>
-    row.some((cell) => cell === "シードデータ")
-  );
-
-  // カラム定義とシードデータのヘッダー行を取得
-  let seedDataColumns: string[] = [];
-  if (seedDataStartIndex !== -1 && sheetData[seedDataStartIndex + 1]) {
-    seedDataColumns = sheetData[seedDataStartIndex + 1].filter(Boolean);
-  }
-
   // シードデータの収集
-  const seedData = extractSeedData(
-    sheetData,
-    seedDataStartIndex,
-    seedDataColumns
-  );
+  const seedData = extractSeedData(sheetData);
 
   // カラム定義の収集（既存のコード）
   for (

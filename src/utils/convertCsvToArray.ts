@@ -1,5 +1,5 @@
-import * as fs from "fs";
 import Papa from "papaparse";
+import * as fs from "fs";
 
 /**
  * csvファイルを読み込み、２次元配列に変換する
