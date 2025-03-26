@@ -1,14 +1,9 @@
 import * as fs from "fs";
 import { TableDependency, topologicalSort } from "./src/utils/topologicalSort";
-import { aggregateDependencies } from "./src/getColumnData/aggregateDependencies";
 import { generateMigrationFile } from "./src/generateMigrationFile";
+import { aggregateDependencies } from "./src/getCsvColumnData/aggregateDependencies";
 
 export const CSV_DIR = "./resources";
-export const OUT_DIR = "./out/migrations";
-
-if (!fs.existsSync(OUT_DIR)) {
-  fs.mkdirSync(OUT_DIR, { recursive: true });
-}
 
 function processCSVFiles() {
   const files = fs.readdirSync(CSV_DIR).filter((file) => file.endsWith(".csv"));
@@ -17,15 +12,11 @@ function processCSVFiles() {
   // 依存関係の収集
   files.forEach((file) => aggregateDependencies(file, dependencies, CSV_DIR));
 
-  // トポロジカルソートで依存関係を解決
-  const sortedTables = topologicalSort(dependencies);
-
-  console.log(sortedTables);
+  // 依存関係を解決
+  const orderedTables = topologicalSort(dependencies);
 
   // ソートされた順序でマイグレーションファイルを生成
-  sortedTables.forEach((table, index) =>
-    generateMigrationFile(table, index, OUT_DIR)
-  );
+  orderedTables.forEach((table, index) => generateMigrationFile(table, index));
 }
 
 processCSVFiles();

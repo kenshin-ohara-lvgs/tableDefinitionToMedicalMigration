@@ -4,6 +4,7 @@ import { TableDependency } from "./utils/topologicalSort";
 import { generateMigration } from "./migrationConvertLogic";
 import { convertTextToPhpFile } from "./utils/convertTextToPhpFile";
 import { getCurrentDateString } from "./utils/getCurrentDateString";
+export const OUT_DIR = "./out/migrations";
 
 // タイムスタンプの基準値
 const baseTimestamp = new Date()
@@ -13,14 +14,12 @@ const baseTimestamp = new Date()
 
 /**
  * 依存関係が整理されたテーブル情報をもとにマイグレーションファイルを生成する
- * @param table
  * @param index
  * @param OUT_DIR
  */
 export const generateMigrationFile = (
   table: TableDependency,
-  index: number,
-  OUT_DIR: string
+  index: number
 ) => {
   const csvdata = convertCsvToArray(table.csvPath).data as string[][];
 
