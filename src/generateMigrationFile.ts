@@ -1,10 +1,8 @@
 import { convertCsvToArray } from "./utils/convertCsvToArray";
 import { TableDependency } from "./utils/topologicalSort";
 import { generateMigration } from "./migrationConvertLogic";
-import { convertTextToPhpFile } from "./utils/convertTextToPhpFile";
 import { getCurrentDateString } from "./utils/getCurrentDateString";
-import path from "path";
-export const OUT_DIR = "./out/migrations";
+import { readCsvFile, OUTPUT_DIR, writeFile } from "./utils/fileSystem";
 
 // タイムスタンプの基準値
 const baseTimestamp = new Date()
@@ -14,14 +12,16 @@ const baseTimestamp = new Date()
 
 /**
  * 依存関係が整理されたテーブル情報をもとにマイグレーションファイルを生成する
- * @param index
- * @param OUT_DIR
+ * @param table テーブル情報
+ * @param index インデックス
  */
 export const generateMigrationFile = (
   table: TableDependency,
   index: number
 ) => {
-  const csvdata = convertCsvToArray(table.csvPath).data as string[][];
+  // 新しいユーティリティ関数を使用
+  const csvContent = readCsvFile(table.csvPath);
+  const csvdata = convertCsvToArray(csvContent).data as string[][];
 
   // インデックスを使用して時間差を付ける
   const timestamp = parseInt(baseTimestamp) + index;
@@ -33,10 +33,9 @@ export const generateMigrationFile = (
   const outputFileName = `${formattedTimestamp}_create_${
     table.tableName
   }_${getCurrentDateString()}.php`;
-  const outputPath = path.join(OUT_DIR, outputFileName);
 
   const migrationContent = generateMigration(csvdata);
-  convertTextToPhpFile(outputPath, migrationContent);
+  writeFile(outputFileName, migrationContent, OUTPUT_DIR);
 
   console.log(`Generated migration: ${outputFileName}`);
 };

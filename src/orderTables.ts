@@ -1,6 +1,21 @@
-import { TableDependency } from "../utils/topologicalSort";
-import { convertCsvToArray } from "../utils/convertCsvToArray";
-import { readCsvFile } from "../utils/fileSystem";
+import { convertCsvToArray } from "./utils/convertCsvToArray";
+import { readCsvFile, RESOURCES_DIR } from "./utils/fileSystem";
+import { TableDependency, topologicalSort } from "./utils/topologicalSort";
+
+export const orderTables = (tables: string[]): TableDependency[] => {
+  const dependencies: TableDependency[] = [];
+
+  // 依存関係の収集
+  tables.forEach((tables) =>
+    aggregateDependencies(tables, dependencies, RESOURCES_DIR)
+  );
+
+  // 依存関係を解決
+  const orderedTables = topologicalSort(dependencies);
+  console.log(orderedTables);
+
+  return orderedTables;
+};
 
 /**
  * 渡されたファイルのデータをもとに、
@@ -9,7 +24,7 @@ import { readCsvFile } from "../utils/fileSystem";
  * @param dependencies
  * @param CSV_DIR
  */
-export const aggregateDependencies = (
+const aggregateDependencies = (
   file: string,
   dependencies: TableDependency[],
   CSV_DIR: string

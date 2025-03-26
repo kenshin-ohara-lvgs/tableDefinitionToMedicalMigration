@@ -1,8 +1,9 @@
 export interface TableDependency {
   tableName: string;
-  csvPath: string;
   dependencies: string[];
+  csvPath: string;
 }
+
 // トポロジカルソートの実装
 export function topologicalSort(tables: TableDependency[]): TableDependency[] {
   const visited = new Set<string>();
